@@ -1,0 +1,51 @@
+def graph_color(graph, color_no, result, nodes, current_node_index):
+    # Base case: If all nodes are colored, return True
+    if current_node_index == len(nodes):
+        return True
+
+    current_node = nodes[current_node_index]
+
+    # Try all colors for the current node
+    for color in range(1, color_no + 1):
+        is_color_valid = True
+
+        # Check if the color is valid for the current node
+        for neighbor in graph[current_node]:
+            if result[neighbor] == color:
+                is_color_valid = False
+                break
+
+        if is_color_valid:
+            result[current_node] = color
+
+            # Recur for the next node
+            if graph_color(graph, color_no, result, nodes, current_node_index + 1):
+                return True
+
+            # Backtrack
+            result[current_node] = 0
+
+    return False
+
+if __name__ == '__main__':
+    color_no = 3
+
+    # Initialize the result dictionary with all nodes uncolored (0)
+    result = {"Dhaka": 1, "Sylhet": 2, "Feni": 0, "Rajshahi": 0}  # Pre-assign Dhaka = red (1), Sylhet = green (2)
+
+    graph = {
+        "Dhaka": ["Sylhet", "Feni", "Rajshahi"],
+        "Sylhet": ["Dhaka", "Feni"],
+        "Feni": ["Dhaka", "Sylhet", "Rajshahi"],
+        "Rajshahi": ["Dhaka", "Feni"]
+    }
+
+    nodes = list(result.keys())
+    is_coloring_possible = graph_color(graph, color_no, result, nodes, 2)  # Start from index 2 as Dhaka and Sylhet are pre-colored
+
+    if is_coloring_possible:
+        colors = {1: "red", 2: "green", 3: "blue"}
+        colored_result = {node: colors[result[node]] for node in result}
+        print(colored_result)
+    else:
+        print("No solution exists...")
